@@ -1,0 +1,37 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - master  # 或 main，取决于你的主分支名称
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'  # 缓存npm依赖以加快构建速度
+        
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Build project
+        run: npm run build
+        env:
+          NODE_ENV: production
+        
+      - name: Create .nojekyll file
+        run: touch out/.nojekyll
+        
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: out
+          branch: gh-pages
+          clean: true
